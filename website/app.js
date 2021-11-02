@@ -8,11 +8,11 @@ const postData = async ( url = '') => {
     const res = await fetch(url);
 
     try {
-        const data = await stringify(res);
+        const data = await res;
         console.log(data);
     } catch(error) {
       console.log("error", error);
       }
   }
 
-postData("/");
+// postData("/");
