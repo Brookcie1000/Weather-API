@@ -1,5 +1,9 @@
 // Setup empty JS object to act as endpoint for all routes
-let projectData = ["test1","test2"];
+const projectData = {
+    color:  "blue",
+    type:   "happy"
+
+}
 
 // Require Express to run server and routes
 const express = require("express");
@@ -34,8 +38,8 @@ const server = app.listen(port, listening);
 
 // Testing GET requests
 const getWorked = (req,res) => {
-    res.send(console.log("GET Worked from server!"));
+    res.send(projectData);
 
 }
 
-app.get("/", getWorked);
+app.get("/fakeAPI", getWorked);
