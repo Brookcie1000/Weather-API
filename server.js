@@ -34,10 +34,19 @@ const server = app.listen(port, listening);
 
 // Testing GET requests
 const storeLocationData = (req,res) => {
+    console.log("=====================")
     console.log(`Client has sent data:`);
     console.log(req.body);
     locationData.push(req.body);
     console.log(locationData);
+    res.send("Data Stored")
+}
+
+const sendLocationData = (req,res) => {
+    console.log("=====================")
+    console.log("Client has requested location data.")
+    res.send(locationData);
 }
 
 app.post("/newWeatherEntry", storeLocationData);
+app.get("/locationDataHistory", sendLocationData)

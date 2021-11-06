@@ -1,7 +1,9 @@
 /* Global Variables */
+let weatherData;
+let locationHistory;
 const baseURL = "api.openweathermap.org/data/2.5/weather?zip=";
 const apiKey = "e1bbf5369528306233184a0bc1aa8b26";
-const weatherData = {
+const locationData = {
   zipCode: "",
   country: "au"
 
@@ -10,9 +12,10 @@ const weatherData = {
 // Create a new date instance dynamically with JS
 const storeAndGet = () => {
   createLocationData();
-  sendLocationData("/newWeatherEntry", weatherData);
-  getLocationData();
-  fetchWeatherData(weatherData.zipCode, weatherData.country);
+  sendLocationData("/newWeatherEntry", locationData);
+  fetchWeatherData(locationData.zipCode, locationData.country);
+  getStoredLocationData("/locationDataHistory");
+  //updateRecentEntry();
 
 }
 
@@ -30,6 +33,7 @@ const sendLocationData = async ( url = '', data = {})=>{
   try {
     const newData = await res;
     console.log("Server has stored the location data");
+    return res;
 
   } catch(error) {
     console.log("error", error);
@@ -41,7 +45,7 @@ const createLocationData = () => {
   if (!zipCode.match("[0-9]+")) {
     console.log("Invalid Zipcode/Postcode, Please Only Input Numbers");
   } else {
-    weatherData.zipCode = zipCode;
+    locationData.zipCode = zipCode;
 
   }
 
@@ -51,7 +55,7 @@ const fetchWeatherData = async (zipCode, country) => {
   const res = await fetch("http://" + baseURL + zipCode + "," + country + "&appid=" + apiKey); // the "//" forces the fetch to search WWW, otherwise it goes through localhost
 
       try {
-          const weatherData = await res.json();
+          weatherData = await res.json();
           console.log(weatherData);
           return weatherData;
 
@@ -61,3 +65,24 @@ const fetchWeatherData = async (zipCode, country) => {
       }
 
 }
+
+const getStoredLocationData = async (url) => {
+  const res = await fetch(url);
+
+  try {
+    locationHistory = res.json();
+    console.log(newData);
+    return newData;
+
+  } catch(error) {
+    console.log("error", error);
+
+  }
+
+}
+
+/* const updateRecentEntry = () => {
+  const dateDiv = document.getElementById("date")
+  dateDiv.innerText = weatherData.
+
+} */
