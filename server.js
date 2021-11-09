@@ -1,5 +1,5 @@
 // Setup empty JS object to act as endpoint for all routes
-let locationData = [];
+let projectData = {};
 
 // Require Express to run server and routes
 const express = require("express");
@@ -34,19 +34,21 @@ const server = app.listen(port, listening);
 
 // Testing GET requests
 const storeLocationData = (req,res) => {
-    console.log("=====================")
+    console.log("=====================");
     console.log(`Client has sent data:`);
     console.log(req.body);
-    locationData.push(req.body);
-    console.log(locationData);
-    res.send("Data Stored")
+    projectData["date"] = req.body.main.date;
+    projectData["temperature"] = req.body.main.temp;
+    projectData["feeling"] = req.body.main.feeling;
+    console.log(projectData);
+    res.send("Data Stored");
 }
 
 const sendLocationData = (req,res) => {
-    console.log("=====================")
-    console.log("Client has requested location data.")
-    res.send(locationData);
+    console.log("=====================");
+    console.log("Client has requested location data.");
+    res.send(projectData);
 }
 
 app.post("/newWeatherEntry", storeLocationData);
-app.get("/locationDataHistory", sendLocationData)
+app.get("/weatherDataHistory", sendLocationData);

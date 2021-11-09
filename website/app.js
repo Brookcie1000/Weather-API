@@ -1,5 +1,5 @@
 /* Global Variables */
-let locationHistory;
+let weatherHistory;
 const baseURL = "api.openweathermap.org/data/2.5/weather?zip=";
 const apiKey = "e1bbf5369528306233184a0bc1aa8b26&units=metric";
 const locationData = {
@@ -11,9 +11,7 @@ const locationData = {
 // Runs when 'generate' is clicked.
 const storeAndGet = () => {
   createLocationData();
-  sendLocationData("/newWeatherEntry", locationData);
   let weatherData = fetchWeatherData(locationData.zipCode, locationData.country);
-  getStoredLocationData("/locationDataHistory");
 
 }
 
@@ -57,41 +55,43 @@ const createLocationData = () => {
 const fetchWeatherData = async (zipCode, country) => {
   const res = await fetch("http://" + baseURL + zipCode + "," + country + "&appid=" + apiKey); // the "//" forces the fetch to search WWW, otherwise it goes through localhost
 
-      try {
-          weatherData = await res.json();
-          weatherData.main.date = new Date(); //add in date to weatherData
-          const dateDiv = document.getElementById("date");
-          const tempDiv = document.getElementById("temp");
-          const contentDiv = document.getElementById("content");
-          const feelingsBox = document.getElementById("feelings");
-          if (feelingsBox.value === "") { //Check that the 'feelings' box isn't empty
-            feelingsBox.placeholder = "Please input a feeling.";
-            feelingsBox.style = ""
-
-          } else {
-            dateDiv.innerText = "Date: " + weatherData.main.date.toLocaleDateString();
-            tempDiv.innerText = "Current Temperature: " + weatherData.main.temp.toFixed() + " °C";
-            contentDiv.innerText = `As of ${weatherData.main.date.toLocaleTimeString()} at ${weatherData.name} it's ${weatherData.main.temp.toFixed()} °C, with a high of ${weatherData.main.temp_max.toFixed()} °C and a low of ${weatherData.main.temp_min.toFixed()} °C. Is that why you're feeling ${feelingsBox.value.toLowerCase()}?`
-            return weatherData;};
-
+    try {
+      weatherData = await res.json();
+      const feelingsBox = document.getElementById("feelings");
+      const dateDiv = document.getElementById("date");
+      const tempDiv = document.getElementById("temp");
+      const contentDiv = document.getElementById("content");
+      weatherData.main.date = new Date(); //add in date to weatherData
+      if (feelingsBox.value === "") { //Check that the 'feelings' box isn't empty
+        feelingsBox.placeholder = "Please input a feeling.";
+        feelingsBox.style = ""
+       } else {
+        weatherData.main.feeling = feelingsBox.value;
+        dateDiv.innerHTML = "Date: " + weatherData.main.date.toLocaleDateString();
+        tempDiv.innerHTML = "Current Temperature: " + weatherData.main.temp.toFixed() + " °C";
+        contentDiv.innerHTML = `As of ${weatherData.main.date.toLocaleTimeString()} at ${weatherData.name} it's ${weatherData.main.temp.toFixed()} °C, with a high of ${weatherData.main.temp_max.toFixed()} °C and a low of ${weatherData.main.temp_min.toFixed()} °C. Is that why you're feeling ${feelingsBox.value.toLowerCase()}?`
+        sendLocationData("/newWeatherEntry", weatherData);
+        getStoredWeatherData("/weatherDataHistory");
+        return weatherData;};
+                  
       } catch(error) {
         const zipDiv = document.getElementById("zip");
         zipDiv.value = "";
         zipDiv.placeholder = "Please input 4 digit zipcode (0-9)" //spit out error and remind of valid zipcode if we get error from the API weather.
         console.log("error", error);
 
-      }
+    }
 
 }
 
 // Return the stored data from the server, includes all past inputs of zipcodes and countries
-const getStoredLocationData = async (url) => {
+const getStoredWeatherData = async (url) => {
   const res = await fetch(url);
 
   try {
-    locationHistory = res.json();
-    console.log(locationHistory);
-    return locationHistory;
+    weatherHistory = res.json();
+    console.log(`The server has sent your latest input`);
+    return weatherHistory;
 
   } catch(error) {
     console.log("error", error);
